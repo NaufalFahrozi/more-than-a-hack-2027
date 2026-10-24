@@ -10,7 +10,10 @@
 ## Slide 1: Title & Team Introduction
 * **Headline:** Spatio-Temporal Football Possession Intelligence
 * **Sub-headline:** Solving Uncorrected Tracking Gaps & Stoppage Ambiguities via Physics-Constrained Modeling
-* **Team:** StartUP (Naufal Fahrozi & Team)
+* **Team:** StartUP
+  * **Muhammad Naufal Fahrozi** (Lead Analyst & System Architect)
+  * **Raymond Thymotimmanuel** (Data Science & Football Analytics)
+  * **Tua Delima Sitompul** (Machine Learning & Optimization)
 * **Goal:** Production-grade, high-fidelity frame-by-frame ball possession classification for FC Barcelona.
 
 ---

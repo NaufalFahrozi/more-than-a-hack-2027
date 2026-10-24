@@ -177,11 +177,14 @@ We explored both the Tactical and Broadcast recordings provided for the match:
 
 ---
 
-## 👥 Authors & Team
+## 👥 Authors & Team: StartUP
 
-* **Lead Analyst & Engineer:** Project Participant
-* **Team Name:** *(As registered for More Than A Hack 2027)*
-* **Event:** More Than A Hack 2027 — Barça Innovation Hub & Metrica Sports
+* **Team Name:** `StartUP`
+* **Team Members:**
+  1. **Muhammad Naufal Fahrozi** (Lead Analyst & System Architect)
+  2. **Raymond Thymotimmanuel** (Data Science & Football Analytics)
+  3. **Tua Delima Sitompul** (Machine Learning & System Optimization)
+* **Event:** More Than A Hack 2027 — Barça Innovation Hub & Metrica Sports (Talent Arena Barcelona)
 
 ---
 

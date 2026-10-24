@@ -2,10 +2,13 @@
 
 **Competition:** More Than A Hack 2027 (Phase 1: Ball Possession)  
 **Organizers:** Mobile World Capital Barcelona, Barça Innovation Hub (FC Barcelona), Metrica Sports  
+**Team Name:** StartUP  
+**Team Members:**  
+1. **Muhammad Naufal Fahrozi** (Lead Analyst & System Architect)  
+2. **Raymond Thymotimmanuel** (Data Science & Football Analytics)  
+3. **Tua Delima Sitompul** (Machine Learning & Optimization)  
 **Target:** 199,319-frame temporal possession classification (`H`, `A`, `D`, `X`)  
-**Team Name:** StartUP
-**Pipeline Version:** `v2_optimized_pipeline`  
-**Primary Deliverable:** `evaluation/results/v2_optimized_pipeline.csv` (Passes 100% of validation checks)  
+**Primary Deliverable:** `evaluation/results/StartUP.csv` (Passes 100% of validation checks)  
 **Repository:** [https://github.com/NaufalFahrozi/more-than-a-hack-2027](https://github.com/NaufalFahrozi/more-than-a-hack-2027)
 
 ---
