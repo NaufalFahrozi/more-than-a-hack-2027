@@ -11,9 +11,9 @@
 * **Headline:** Spatio-Temporal Football Possession Intelligence
 * **Sub-headline:** Solving Uncorrected Tracking Gaps & Stoppage Ambiguities via Physics-Constrained Modeling
 * **Team:** StartUP
-  * **Muhammad Naufal Fahrozi** (Lead Analyst & System Architect)
-  * **Raymond Thymotimmanuel** (Data Science & Football Analytics)
-  * **Tua Delima Sitompul** (Machine Learning & Optimization)
+  * **Muhammad Naufal Fahrozi** — Team Lead & AI Systems Architect
+  * **Raymond Thymotimmanuel** — Football Domain Specialist & Tactical Analyst
+  * **Tua Delima Sitompul** — Lead Data Scientist & Spatio-Temporal Modeler
 * **Goal:** Production-grade, high-fidelity frame-by-frame ball possession classification for FC Barcelona.
 
 ---
