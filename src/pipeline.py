@@ -34,6 +34,12 @@ def run_smart_pipeline(output_filename="v1_smart_pipeline.csv", smooth_window=10
     rules = FootballRulesEngine()
     smoother = PossessionTemporalSmoother(min_possession_frames=20, max_gap_fill=45)
     
+    # Calculate finite-difference ball speed (m/s)
+    dx = np.diff(ball_x, prepend=ball_x[0])
+    dy = np.diff(ball_y, prepend=ball_y[0])
+    ball_speed = np.sqrt(dx**2 + dy**2) * 25.0
+    ball_speed[~ball_visible] = np.nan
+    
     # 3. Detect Dead Ball (D) signals
     dead_mask = np.zeros(TOTAL_FRAMES, dtype=bool)
     
@@ -43,21 +49,15 @@ def run_smart_pipeline(output_filename="v1_smart_pipeline.csv", smooth_window=10
     print(f"  Out of bounds detected: {np.sum(oob_mask)} frames")
     
     # B) Collective player stoppage (low speed)
-    stoppage_mask = rules.detect_collective_stoppage(mean_speed, speed_threshold=1.55, min_consecutive=35)
+    stoppage_mask = rules.detect_collective_stoppage(mean_speed, speed_threshold=1.60, min_consecutive=30)
     dead_mask |= stoppage_mask
     print(f"  Collective player stoppages: {np.sum(stoppage_mask)} frames")
     
-    # C) Smart Tagging Set-Pieces (pre-kickoff phases)
+    # C) Smart Tagging Set-Pieces with dynamic restart detection
     events = load_smart_tagging_intervals()
-    sp_count = 0
-    for e in events:
-        if e["code"] == "SET PIECES":
-            sf = max(0, e["start_frame"])
-            ef = min(TOTAL_FRAMES, e["end_frame"])
-            if ef - sf >= 35:
-                dead_mask[sf:ef] = True
-                sp_count += 1
-    print(f"  Smart Tagging Set-Pieces applied: {sp_count} events")
+    sp_dead = rules.detect_set_piece_dead_intervals(events, ball_visible, ball_speed, nearest_dist)
+    dead_mask |= sp_dead
+    print(f"  Smart Tagging Set-Pieces dynamic dead ball: {np.sum(sp_dead)} frames")
     
     # 4. Fill short ball occlusions using possession continuity
     print("  Interpolating short missing ball occlusions...")

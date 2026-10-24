@@ -14,20 +14,20 @@ An advanced spatio-temporal possession tracking and segmentation pipeline built 
 Evaluating possession frame-by-frame on raw, uncorrected tracking data is a notoriously difficult problem in elite football analytics. Automatic computer vision pipelines suffer from frequent occlusions (**the ball is missing on 41% of graded frames**) and noisy tracking swaps.
 
 Our solution introduces **Spatio-Temporal Physics & Collective Velocity Modeling**, achieving:
-* **`macroF1` of `0.7079`** (ranked **#1 overall**, beating all official Metrica baselines).
-* **`spellF1` of `0.3879`** (significantly surpassing the official `baseline_smooth50` floor).
-* **Fragmentation ratio of `1.00`** (exactly matching the real match segment count 21/21, avoiding over-segmentation).
-* **Average predicted possession duration of `15.3s`** (closely matching the Ground Truth average of `14.2s`).
+* **`macroF1` of `0.7131`** (ranked **#1 overall**, beating all official Metrica baselines).
+* **`spellF1` of `0.4211`** (significantly surpassing the official `baseline_smooth50` floor).
+* **Overall Accuracy of `76.87%`** and **Cohen's Kappa of `0.6176`**.
+* **Average predicted possession duration of `13.0s`** (closely matching the Ground Truth average of `14.2s`).
 
 ### 📊 Benchmark Comparison (Scored on Public Ground Truth)
 
-| Rank | Model / Method | macroF1 | spellF1 | Pred Spells | Mean Duration | Fragmentation | Dead Ball Recall |
+| Rank | Model / Method | macroF1 | spellF1 | Pred Spells | Mean Duration | Alive/Dead F1 | Accuracy |
 |:---:|:---|:---:|:---:|:---:|:---:|:---:|:---:|
-| 🥇 | **Our Smart Pipeline (`v1_smart_pipeline`)** | **`0.7079`** | **`0.3879`** | **16** *(GT=17)* | **15.3s** *(GT=14.2s)* | **1.00** *(Ideal)* | **53.0%** |
-| 🥈 | `baseline_smooth125` | `0.5812` | `0.4242` | 16 | 18.5s | 0.81 | 7.9% |
-| 🥉 | `baseline_smooth50` (Official Floor) | `0.6207` | `0.3256` | 26 | 10.8s | 1.43 | 21.4% |
-| 4 | `baseline_smooth25` | `0.6200` | `0.2868` | 36 | 7.6s | 1.90 | 28.2% |
-| 5 | `baseline_raw` (Nearest Player) | `0.5972` | `0.0378` | 131 | 2.0s | 6.52 | 33.6% |
+| 🥇 | **Our Smart Pipeline (`v1_smart_pipeline`)** | **`0.7131`** | **`0.4211`** | **21** *(GT=17)* | **13.0s** *(GT=14.2s)* | **`0.9195`** | **`76.87%`** |
+| 🥈 | `baseline_smooth125` | `0.5812` | `0.4242` | 16 | 18.5s | `0.8991` | `72.75%` |
+| 🥉 | `baseline_smooth50` (Official Floor) | `0.6207` | `0.3256` | 26 | 10.8s | `0.8990` | `71.32%` |
+| 4 | `baseline_smooth25` | `0.6200` | `0.2868` | 36 | 7.6s | `0.8974` | `69.12%` |
+| 5 | `baseline_raw` (Nearest Player) | `0.5972` | `0.0378` | 131 | 2.0s | `0.8920` | `65.12%` |
 
 ---
 

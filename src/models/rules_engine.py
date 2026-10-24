@@ -61,3 +61,19 @@ class FootballRulesEngine:
             stoppage[start:] = True
             
         return stoppage
+
+    def detect_set_piece_dead_intervals(self, events, ball_vis, ball_speed, nearest_dist, total_frames=TOTAL_FRAMES):
+        """Identify dead ball windows preceding set piece restart kicks."""
+        sp_dead = np.zeros(total_frames, dtype=bool)
+        for e in events:
+            if e["code"] == "SET PIECES":
+                sf = max(0, e["start_frame"])
+                ef = min(total_frames, e["end_frame"])
+                restart_frame = ef
+                # Scan for dynamic restart kick (ball velocity spike near player)
+                for f in range(sf + 25, ef):
+                    if ball_vis[f] and ball_speed[f] > 5.0 and nearest_dist[f] < 2.5:
+                        restart_frame = f
+                        break
+                sp_dead[sf:restart_frame] = True
+        return sp_dead
