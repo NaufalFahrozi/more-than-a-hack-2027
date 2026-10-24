@@ -181,7 +181,7 @@ We explored both the Tactical and Broadcast recordings provided for the match:
 
 * **Team Name:** `StartUP`
 * **Team Members & Core Contributions:**
-  1. [**Muhammad Naufal Fahrozi** (@NaufalFahrozi)](https://github.com/NaufalFahrozi) — *Team Lead & AI Systems Architect*  
+  1. [**Muhammad Naufal Fahrozi** (@NaufalFahrozi)](https://github.com/NaufalFahrozi) — *Team Lead & AI Systems Architect* (`naufalfahrozi01@gmail.com`)  
      Overall project orchestration, agentic AI vibe-coding architecture, end-to-end pipeline engineering, multi-camera synchronization, and system reproducibility.
   2. [**Raymond Thymotimmanuel** (@Rodexxx24)](https://github.com/Rodexxx24) — *Football Domain Specialist & Tactical Analyst* (`raymondzero123@gmail.com`)  
      Domain rules formalization, tactical match interpretation, collective velocity droop criteria, and dynamic set-piece restart verification.

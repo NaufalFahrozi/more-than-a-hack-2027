@@ -4,7 +4,7 @@
 **Organizers:** Mobile World Capital Barcelona, Barça Innovation Hub (FC Barcelona), Metrica Sports  
 **Team Name:** StartUP  
 **Team Members:**  
-1. [**Muhammad Naufal Fahrozi** (@NaufalFahrozi)](https://github.com/NaufalFahrozi) — *Team Lead & AI Systems Architect*  
+1. [**Muhammad Naufal Fahrozi** (@NaufalFahrozi)](https://github.com/NaufalFahrozi) — *Team Lead & AI Systems Architect* (`naufalfahrozi01@gmail.com`)  
 2. [**Raymond Thymotimmanuel** (@Rodexxx24)](https://github.com/Rodexxx24) — *Football Domain Specialist & Tactical Analyst* (`raymondzero123@gmail.com`)  
 3. [**Tua Delima Sitompul** (@delima-sitompul)](https://github.com/delima-sitompul) — *Lead Data Scientist & Spatio-Temporal Modeler* (`delimasitompul514@gmail.com`)  
 **Target:** 199,319-frame temporal possession classification (`H`, `A`, `D`, `X`)  
