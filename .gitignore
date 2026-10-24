@@ -48,6 +48,7 @@ data/*
 # *.pdf stays as insurance: internal decks and proposals have a habit of landing in the working
 # tree, and this repository is public.
 *.pdf
+!docs/StartUP.pdf
 
 # Organiser tooling lives in ../mtah2027-organizers, outside this repository. This line is
 # insurance against it being recreated in here by habit.
