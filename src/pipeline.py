@@ -2,6 +2,10 @@
 
 import os
 import sys
+
+# Ensure repository root is on sys.path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 import numpy as np
 import pandas as pd
 
@@ -15,10 +19,10 @@ from src.data_loader import (
 from src.models.rules_engine import FootballRulesEngine
 from src.models.temporal_smoother import PossessionTemporalSmoother
 
-def run_smart_pipeline(output_filename="v1_smart_pipeline.csv", smooth_window=100):
+def run_smart_pipeline(output_filename="v2_optimized_pipeline.csv", smooth_window=100, gap_fill=30, speed_th=1.10, min_stoppage_frames=50):
     """Executes the full domain-informed possession classification pipeline."""
     print("=" * 60)
-    print(">> Running More Than a Hack 2027 - Smart Possession Pipeline")
+    print(">> Running More Than a Hack 2027 - Optimized Possession Pipeline (v2)")
     print("=" * 60)
     
     # 1. Load tracking features
@@ -32,13 +36,16 @@ def run_smart_pipeline(output_filename="v1_smart_pipeline.csv", smooth_window=10
     
     # 2. Initialize modules
     rules = FootballRulesEngine()
-    smoother = PossessionTemporalSmoother(min_possession_frames=20, max_gap_fill=45)
+    smoother = PossessionTemporalSmoother(min_possession_frames=20, max_gap_fill=gap_fill)
     
-    # Calculate finite-difference ball speed (m/s)
+    # Calculate finite-difference ball speed (m/s) strictly on consecutive visible frames
     dx = np.diff(ball_x, prepend=ball_x[0])
     dy = np.diff(ball_y, prepend=ball_y[0])
     ball_speed = np.sqrt(dx**2 + dy**2) * 25.0
-    ball_speed[~ball_visible] = np.nan
+    consecutive_vis = ball_visible[1:] & ball_visible[:-1]
+    ball_speed_valid = np.zeros(TOTAL_FRAMES, dtype=bool)
+    ball_speed_valid[1:] = consecutive_vis
+    ball_speed[~ball_speed_valid] = np.nan
     
     # 3. Detect Dead Ball (D) signals
     dead_mask = np.zeros(TOTAL_FRAMES, dtype=bool)
@@ -49,7 +56,7 @@ def run_smart_pipeline(output_filename="v1_smart_pipeline.csv", smooth_window=10
     print(f"  Out of bounds detected: {np.sum(oob_mask)} frames")
     
     # B) Collective player stoppage (low speed)
-    stoppage_mask = rules.detect_collective_stoppage(mean_speed, speed_threshold=1.60, min_consecutive=30)
+    stoppage_mask = rules.detect_collective_stoppage(mean_speed, speed_threshold=speed_th, min_consecutive=min_stoppage_frames)
     dead_mask |= stoppage_mask
     print(f"  Collective player stoppages: {np.sum(stoppage_mask)} frames")
     
@@ -60,12 +67,11 @@ def run_smart_pipeline(output_filename="v1_smart_pipeline.csv", smooth_window=10
     print(f"  Smart Tagging Set-Pieces dynamic dead ball: {np.sum(sp_dead)} frames")
     
     # 4. Fill short ball occlusions using possession continuity
-    print("  Interpolating short missing ball occlusions...")
+    print(f"  Interpolating short missing ball occlusions (<= {gap_fill} frames)...")
     continuous_team = smoother.interpolate_short_ball_gaps(nearest_team, ball_visible)
     
     # 5. Apply temporal majority vote smoothing over active team codes
     print(f"  Applying temporal window smoothing (+/- {smooth_window} frames)...")
-    # Cumulative sums for O(N) rolling counts
     h_cum = np.concatenate(([0], np.cumsum(continuous_team == HOME_CODE)))
     a_cum = np.concatenate(([0], np.cumsum(continuous_team == AWAY_CODE)))
     
@@ -82,7 +88,7 @@ def run_smart_pipeline(output_filename="v1_smart_pipeline.csv", smooth_window=10
     smoothed_team[seen] = np.where(h_win[seen] >= a_win[seen], HOME_CODE, AWAY_CODE)
     
     # 6. Eliminate micro flickers
-    smoothed_team = smoother.eliminate_micro_flickers(smoothed_team, min_run=20)
+    smoothed_team = smoother.eliminate_micro_flickers(smoothed_team, min_run=25)
     
     # 7. Build categorical labels (H, A, D, X)
     labels = smoother.build_labels(smoothed_team, dead_mask)
@@ -103,4 +109,5 @@ def run_smart_pipeline(output_filename="v1_smart_pipeline.csv", smooth_window=10
     return out_path
 
 if __name__ == "__main__":
-    run_smart_pipeline()
+    out_name = sys.argv[1] if len(sys.argv) > 1 else "v2_optimized_pipeline.csv"
+    run_smart_pipeline(output_filename=out_name)

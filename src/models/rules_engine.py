@@ -40,7 +40,7 @@ class FootballRulesEngine:
         oob[valid] = x_out | y_out
         return oob
 
-    def detect_collective_stoppage(self, mean_player_speed, speed_threshold=1.65, min_consecutive=25):
+    def detect_collective_stoppage(self, mean_player_speed, speed_threshold=1.10, min_consecutive=50):
         """Detect sustained stoppage phases where all players slow to walking pace."""
         low_speed = (mean_player_speed < speed_threshold) & (~np.isnan(mean_player_speed))
         

@@ -111,13 +111,15 @@ def stream_tracking_features(raw_path=ATD_RAW_PATH, meta_path=ATD_META_PATH):
                 c2 = group.index(",", c1 + 1)
                 px = float(group[:c1]) * PITCH_LENGTH
                 py = float(group[c1+1:c2]) * PITCH_WIDTH
-                spd = float(group[c2+1:])
+                val_spd = group[c2+1:]
+                spd = float(val_spd) if val_spd != "NaN" else np.nan
                 team = track_teams[slot]
                 
-                if team == HOME_CODE:
-                    h_speeds.append(spd)
-                else:
-                    a_speeds.append(spd)
+                if not np.isnan(spd):
+                    if team == HOME_CODE:
+                        h_speeds.append(spd)
+                    else:
+                        a_speeds.append(spd)
                     
                 if b_vis:
                     dx = px - bx

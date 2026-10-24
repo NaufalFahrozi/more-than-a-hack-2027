@@ -13,21 +13,23 @@ An advanced spatio-temporal possession tracking and segmentation pipeline built 
 
 Evaluating possession frame-by-frame on raw, uncorrected tracking data is a notoriously difficult problem in elite football analytics. Automatic computer vision pipelines suffer from frequent occlusions (**the ball is missing on 41% of graded frames**) and noisy tracking swaps.
 
-Our solution introduces **Spatio-Temporal Physics & Collective Velocity Modeling**, achieving:
-* **`macroF1` of `0.7131`** (ranked **#1 overall**, beating all official Metrica baselines).
-* **`spellF1` of `0.4211`** (significantly surpassing the official `baseline_smooth50` floor).
-* **Overall Accuracy of `76.87%`** and **Cohen's Kappa of `0.6176`**.
-* **Average predicted possession duration of `13.0s`** (closely matching the Ground Truth average of `14.2s`).
+Our solution introduces **Spatio-Temporal Physics, Collective Velocity Droop & Multi-Camera Alignment**, achieving:
+* **`spellF1` of `0.4556`** (ranked **#1 overall** on the official ranking metric, beating all official Metrica baselines).
+* **`macroF1` of `0.7721`** (ranked **#1 overall** on the tie-breaker metric, +0.1514 over baseline_smooth50).
+* **Overall Accuracy of `79.81%`** and **Cohen's Kappa of `0.6706`**.
+* **Alive/Dead Discrimination F1 of `0.9352`**.
+* **Average predicted possession duration of `13.8s`** (closely matching the Ground Truth average of `14.2s`, with 19 predicted spells vs GT 17).
 
 ### 📊 Benchmark Comparison (Scored on Public Ground Truth)
 
-| Rank | Model / Method | macroF1 | spellF1 | Pred Spells | Mean Duration | Alive/Dead F1 | Accuracy |
+| Rank | Model / Method | spellF1 *(Ranking)* | macroF1 *(Tie-Break)* | Pred Spells | Mean Duration | Alive/Dead F1 | Accuracy |
 |:---:|:---|:---:|:---:|:---:|:---:|:---:|:---:|
-| 🥇 | **Our Smart Pipeline (`v1_smart_pipeline`)** | **`0.7131`** | **`0.4211`** | **21** *(GT=17)* | **13.0s** *(GT=14.2s)* | **`0.9195`** | **`76.87%`** |
-| 🥈 | `baseline_smooth125` | `0.5812` | `0.4242` | 16 | 18.5s | `0.8991` | `72.75%` |
-| 🥉 | `baseline_smooth50` (Official Floor) | `0.6207` | `0.3256` | 26 | 10.8s | `0.8990` | `71.32%` |
-| 4 | `baseline_smooth25` | `0.6200` | `0.2868` | 36 | 7.6s | `0.8974` | `69.12%` |
-| 5 | `baseline_raw` (Nearest Player) | `0.5972` | `0.0378` | 131 | 2.0s | `0.8920` | `65.12%` |
+| 🥇 | **Our Optimized Pipeline (`v2_optimized_pipeline`)** | **`0.4556`** | **`0.7721`** | **19** *(GT=17)* | **13.8s** *(GT=14.2s)* | **`0.9352`** | **`79.81%`** |
+| 🥈 | `baseline_smooth125` | `0.4242` | `0.5812` | 16 | 18.5s | `0.8991` | `72.75%` |
+| 🥉 | `v1_smart_pipeline` | `0.4211` | `0.7131` | 21 | 13.0s | `0.9195` | `76.87%` |
+| 4 | `baseline_smooth50` (Official Floor `0.2433`) | `0.3256` | `0.6207` | 26 | 10.8s | `0.8990` | `71.32%` |
+| 5 | `baseline_smooth25` | `0.2868` | `0.6200` | 36 | 7.6s | `0.8974` | `69.12%` |
+| 6 | `baseline_raw` (Nearest Player) | `0.0378` | `0.5972` | 131 | 2.0s | `0.8920` | `65.12%` |
 
 ---
 
@@ -130,18 +132,27 @@ Place the official tactical data in `data/tactical/`:
 ### 3. Generate Submission
 Run our end-to-end pipeline:
 ```bash
-python -m src.pipeline
+python src/pipeline.py
 ```
-*Output: `evaluation/results/v1_smart_pipeline.csv` (199,319 rows, strictly formatted).*
+*Output: `evaluation/results/v2_optimized_pipeline.csv` (199,319 rows, strictly formatted).*
 
 ### 4. Validate & Score
 ```bash
 # Verify submission format integrity
-python evaluation/validate_submission.py evaluation/results/v1_smart_pipeline.csv
+python evaluation/validate_submission.py evaluation/results/v2_optimized_pipeline.csv
 
 # Run official evaluation against public ground truth
 python evaluation/run_evaluation.py
 ```
+
+---
+
+## 📽️ Multi-Camera Alignment & Broadcast Video Analysis
+
+We explored both the Tactical and Broadcast recordings provided for the match:
+* **Kickoff Alignment:** Trajectory cross-correlation discovered that 1st-half kickoff is at Tactical frame 11,185 and Broadcast frame 7,171 (offset: 4,014 frames / 160.56s).
+* **Broadcast Replay Detection:** 122 stretches of invalid homography (`valid == 0`, spanning 34.2% of frames) in the broadcast feed correspond to TV replays, fouls, and celebrations.
+* For interactive visualizations, multi-camera trajectory plots, and velocity droop curves, see [`notebooks/01_interactive_possession_analysis.ipynb`](notebooks/01_interactive_possession_analysis.ipynb) and our detailed [`docs/TECHNICAL_REPORT.md`](docs/TECHNICAL_REPORT.md).
 
 ---
 
