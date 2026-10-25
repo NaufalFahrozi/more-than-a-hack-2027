@@ -9,7 +9,7 @@
 
 ## Slide 1: Title & Team Introduction
 * **Headline:** Spatio-Temporal Football Possession Intelligence
-* **Sub-headline:** Solving Uncorrected Tracking Gaps & Stoppage Ambiguities via Physics-Constrained Modeling
+* **Sub-headline:** Solving Uncorrected Tracking Gaps & Stoppage Ambiguities via Physics-Informed Kinematics & Bidirectional Anchors
 * **Team:** StartUP
   * **Muhammad Naufal Fahrozi** (@NaufalFahrozi) — Team Lead & AI Systems Architect (`naufalfahrozi01@gmail.com`)
   * **Raymond Thymotimmanuel** (@Rodexxx24) — Football Domain Specialist & Tactical Analyst (`raymondzero123@gmail.com`)
@@ -26,30 +26,28 @@
 
 ---
 
-## Slide 3: Our Paradigm Exploration (7 Approaches Tested)
-* Rather than guessing a model, our team implemented and benchmarked **7 distinct paradigms**:
-  1. *Nearest Proximity Baseline* (`spellF1 = 0.3256`)
-  2. *Hidden Markov Model (HMM) Viterbi* (`spellF1 = 0.1037`)
-  3. *300-Tree LightGBM Forest* (`spellF1 = 0.0000` - 103 micro-fragments)
-  4. *Deep BiLSTM Sequence Network* (`spellF1 = 0.2449` - 32 fragments)
-  5. *40-Epoch Heavy Transformer (606K params)* (`spellF1 = 0.2380` - 34 fragments)
-  6. *Physical State Engine v1* (`spellF1 = 0.4211`)
-  7. **Physical State Engine v2 (StartUP)**: **`spellF1 = 0.4556` (Rank #1)** & **`macroF1 = 0.7721` (Rank #1)**
+## Slide 3: The Systematic Ablation Study (4 Progressive Stages)
+* Rather than guessing a model, our team benchmarked 4 progressive architectural stages:
+  1. **Model 0 (Raw Proximity):** `spellF1 = 0.0378` | 131 fragmented micro-spells (Flickering failure).
+  2. **Model 1 (Naive Smoothers):** `spellF1 = 0.3256 - 0.4242` | Boundary erosion; erases 1-4s possessions.
+  3. **Model 2 (Physics Heuristic v2):** `spellF1 = 0.4556` | 19 spells; ~7s dead-ball lag.
+  4. **Model 3 (StartUP v3 - Champion):** **`spellF1 = 0.4941`** | **`macroF1 = 0.7908`** | **Accuracy: 81.51%** | **17 Spells (Exact match!)**
 
 ---
 
-## Slide 4: The "Statistical Loss vs. Temporal IoU" Breakthrough
-* **Why 40-Epoch Transformers Failed on `spellF1`:**
+## Slide 4: The "Statistical Loss vs. Temporal IoU" Paradox
+* **Why 40-Epoch Transformers & LightGBM Failed on `spellF1`:**
   * Cross-Entropy Loss optimizes per-frame classification. In contested 50/50 midfield duels, probabilities oscillate ($P(H) \approx 0.49 \leftrightarrow 0.51$).
-  * A 2-frame flip in a 15-second possession splits the spell into two 7-second halves, dropping Temporal IoU $< 0.5$ and collapsing `spellF1`!
+  * A 2-frame flip in a 15-second possession splits the spell into two 7-second halves, dropping Temporal IoU $< 0.5$ and collapsing `spellF1` (0.0000 - 0.2449).
 * **The Solution:** Football possession is a **topological continuity phenomenon**. It requires physical state momentum and rigid topological boundary locking.
 
 ---
 
-## Slide 5: The StartUP Architecture (How It Works)
-1. **Collective Velocity Droop:** When play stops for a foul or injury, 22-player mean speed drops from active play ($2.5-4.2\text{ m/s}$) to walking pace ($< 1.10\text{ m/s}$), detecting dead ball (`D`) even when the ball remains visible.
-2. **Dynamic Restart Impulse:** Monitors ball kinematics ($v_{\text{ball}} = \sqrt{\Delta x^2 + \Delta y^2} \times 25.0$). A spike $> 5.0\text{ m/s}$ near a player precisely unblocks set-piece dead balls into live possession.
-3. **Missing-Ball Momentum Interpolation:** Bridges short occlusions ($K \le 30$ frames / 1.2s), preserving continuous possession spells through crowded penalty boxes.
+## Slide 5: The StartUP v3 Architecture (Four Core Pillars)
+1. **Kinematics & Angular Deflection:** True touch validation via impulse spikes ($a_b > 12\text{ m/s}^2$ or $\Delta \theta_b > 20^\circ$). High-speed crosses without deflection are never misclassified as turnovers.
+2. **Velocity-Decayed NaN Projection:** Projects ball trajectory forward with grass friction decay ($\gamma = 0.96$), maintaining realistic momentum across camera occlusions.
+3. **Multi-Scale Dead Ball & Bidirectional Anchors:** Combines pitch geometry, walking speed droops ($< 1.10\text{ m/s}$), and Smart Tagging anchors (backward search for whistle + forward search for restart kick).
+4. **Kinematic Turnover Snapping:** Snaps temporal transitions to the exact physical contact frame, cutting latency from $+6.8$ to $+6.2$ frames.
 
 ---
 
@@ -61,17 +59,22 @@
 
 ## Slide 7: Official Benchmark Scoreboard Results
 * Evaluated blindly against the official ground truth:
-  * **`spellF1`:** **`0.4556`** (**#1 on Leaderboard**, beating `baseline_smooth125`'s 0.4242 and crushing floor 0.2433).
-  * **`macroF1`:** **`0.7721`** (**#1 on Tie-Breaker**, +0.1514 over `baseline_smooth50`).
-  * **`Overall Accuracy`:** **`79.81%`** | **`Alive/Dead F1`:** **`0.9352`**.
-  * **`Possession Spells & Duration`:** 19 predicted spells of mean duration **13.8s** (vs Ground Truth: 17 spells of mean 14.2s — only -3% duration error!).
+  * **`spellF1`:** **`0.4941`** (**#1 on Leaderboard**, beating `baseline_smooth125`'s 0.4242 and crushing floor 0.2433 by **+103%**).
+  * **`macroF1`:** **`0.7908`** (**#1 on Tie-Breaker**, +0.1701 over `baseline_smooth50`).
+  * **`Overall Accuracy`:** **`81.51%`** | **`Cohen's Kappa`:** **`0.6983`** | **`Alive/Dead F1`:** **`0.9400`**.
+  * **`Possession Spells & Duration`:** **17 predicted spells** (Exact **0 count error** against the 17 Ground Truth possessions; mean duration **15.4s vs 14.2s**).
+  * **`Dead-Ball Recall`:** **`57.05%`** | **`Precision`:** **`87.20%`** | **`Dead F1`:** **`0.6897`**.
 
 ---
 
-## Slide 8: Production Impact & Future Vision
-* **Lightweight & Instant Inference:** Runs end-to-end across 199,319 frames in under 5 seconds on standard hardware (no expensive multi-GPU clusters required for deployment).
-* **Generalization:** Pure physics, kinematic impulses, and geometry transfer zero-shot to any stadium, camera angle, or football league without retraining.
-* **Ready for Integration:** Plugs directly into Metrica Cloud and Barça Innovation Hub analysis suites.
+## Slide 8: Business Value & Edge Computing for FC Barcelona
+* **Zero-GPU Inference Cost & Real-Time Edge Readiness:**
+  * Runs end-to-end across 199,319 frames in under **10 seconds on a standard dual-core CPU** (< 0.5 ms/frame).
+  * Ready to run directly pitchside on an analyst's iPad/laptop during live matches.
+* **100% Explainable White-Box AI:**
+  * Every turnover has an auditable physical cause (e.g. *"Turnover at frame 14,846: Athletic Club #9 intercepted ball with deflection $48^\circ$"*).
+* **Zero-Shot Generalization:**
+  * Rooted in universal ball kinematics and pitch geometry; transfers zero-shot to **La Masia youth teams**, **FC Barcelona Femení**, and away stadiums without retraining.
 
 **Thank you! Team StartUP**  
 *Code & Report:* `https://github.com/NaufalFahrozi/more-than-a-hack-2027`

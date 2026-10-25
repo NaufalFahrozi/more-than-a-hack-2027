@@ -18,18 +18,19 @@ Our solution introduces **Spatio-Temporal Physics, Collective Velocity Droop & M
 * **`macroF1` of `0.7721`** (ranked **#1 overall** on the tie-breaker metric, +0.1514 over baseline_smooth50).
 * **Overall Accuracy of `79.81%`** and **Cohen's Kappa of `0.6706`**.
 * **Alive/Dead Discrimination F1 of `0.9352`**.
-* **Average predicted possession duration of `13.8s`** (closely matching the Ground Truth average of `14.2s`, with 19 predicted spells vs GT 17).
+* **Average predicted possession duration of `15.4s`** (closely matching the Ground Truth average of `14.2s`, with **exactly 17 predicted spells vs GT 17**).
 
 ### 📊 Benchmark Comparison (Scored on Public Ground Truth)
 
 | Rank | Model / Method | spellF1 *(Ranking)* | macroF1 *(Tie-Break)* | Pred Spells | Mean Duration | Alive/Dead F1 | Accuracy |
 |:---:|:---|:---:|:---:|:---:|:---:|:---:|:---:|
-| 🥇 | **Our Optimized Pipeline (`v2_optimized_pipeline`)** | **`0.4556`** | **`0.7721`** | **19** *(GT=17)* | **13.8s** *(GT=14.2s)* | **`0.9352`** | **`79.81%`** |
-| 🥈 | `baseline_smooth125` | `0.4242` | `0.5812` | 16 | 18.5s | `0.8991` | `72.75%` |
-| 🥉 | `v1_smart_pipeline` | `0.4211` | `0.7131` | 21 | 13.0s | `0.9195` | `76.87%` |
-| 4 | `baseline_smooth50` (Official Floor `0.2433`) | `0.3256` | `0.6207` | 26 | 10.8s | `0.8990` | `71.32%` |
-| 5 | `baseline_smooth25` | `0.2868` | `0.6200` | 36 | 7.6s | `0.8974` | `69.12%` |
-| 6 | `baseline_raw` (Nearest Player) | `0.0378` | `0.5972` | 131 | 2.0s | `0.8920` | `65.12%` |
+| 🥇 | **StartUP v3 (Proposed Champion)** | **`0.4941`** | **`0.7908`** | **17** *(GT=17)* | **15.4s** *(GT=14.2s)* | **`0.9400`** | **`81.51%`** |
+| 🥈 | StartUP v2 (Physics Heuristic) | `0.4556` | `0.7721` | 19 | 13.8s | `0.9352` | `79.81%` |
+| 🥉 | `baseline_smooth125` | `0.4242` | `0.5812` | 16 | 18.5s | `0.8991` | `72.75%` |
+| 4 | `v1_smart_pipeline` | `0.4211` | `0.7131` | 21 | 13.0s | `0.9195` | `76.87%` |
+| 5 | `baseline_smooth50` (Official Floor `0.2433`) | `0.3256` | `0.6207` | 26 | 10.8s | `0.8990` | `71.32%` |
+| 6 | `baseline_smooth25` | `0.2868` | `0.6200` | 36 | 7.6s | `0.8974` | `69.12%` |
+| 7 | `baseline_raw` (Nearest Player) | `0.0378` | `0.5972` | 131 | 2.0s | `0.8920` | `65.12%` |
 
 ---
 
@@ -44,8 +45,8 @@ To ensure the highest scientific integrity and prove that our approach is not a 
 | **3. Gradient Boosted Trees** | 300-Tree LightGBM Forest | 60,934 frames, 25 features | `0.5890` | `0.0000` | 103 | **Severe fragmentation:** Leaf probabilities oscillate, cutting spells into 1.4s bursts (0% IoU). |
 | **4. Deep Sequence Net** | 1D-CNN + 2-Layer BiLSTM + Attention | 20 Epochs, PyTorch | `0.7858` | `0.2449` | 32 | High frame accuracy (80.1%), but transition edge jitter fragments spells to 6.9s. |
 | **5. Heavy Transformer + BiLSTM** | 3-Layer Transformer (606K params) | 40 Epochs (15 min), TV Loss | `0.7810` | `0.2380` | 34 | Near-zero training loss (0.0014), but overfits pseudo-label noise; fails on macro game flow. |
-| **6. Physical State Engine (v1)** | Kinematic Droop + Set-Pieces | Domain physics | `0.7131` | `0.4211` | 21 | High performance, but unhandled tracker NaNs reduced velocity droop sensitivity. |
-| **7. Physical State Engine (v2 - Champion)** | **Clean Speed Droop + Impulse + Momentum** | **Vectorized Kinematics** | **`0.7721`** | **`0.4556`** | **19** | **Optimal. 13.8s duration matches GT 14.2s (-3% error). Ranked #1 on both metrics.** |
+| **6. Physical State Engine (v2)** | Clean Speed Droop + Impulse | Domain physics | `0.7721` | `0.4556` | 19 | Strong topological continuity, but 7s foul lag. |
+| **7. StartUP v3 (Proposed Champion)** | **Full Kinematics + Decayed NaN Projection + Bidirectional Anchors + Turnover Snapping** | **Physics Kinematics** | **`0.7908`** | **`0.4941`** | **17** | **CHAMPION. Exact spell count match (17 vs 17), 81.5% accuracy, zero fragmentation, lowest latency (+6.2f).** |
 
 ### 💡 Why Physical Modeling Beats 40-Epoch Deep Learning on `spellF1`
 In image classification, training a deep neural network for 40+ epochs reduces loss and improves test accuracy. However, in **continuous temporal event tracking in football**, the competition ranks on **`spellF1` (Temporal IoU matching at thresholds 0.3..0.7)**:
